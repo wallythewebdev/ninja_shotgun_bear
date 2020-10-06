@@ -59,6 +59,8 @@ export default {
 
             playerID: null,
 
+            docID: null,
+
             // data object to be passed to firestore
             fireObj: {
 
@@ -74,10 +76,7 @@ export default {
 
     },
     methods: {
-      clicked(){
-        console.log('jnwadjkawndkawjdnkawdjnk')
-      },
-      createGame(){
+      async createGame(){
         // 1) checks 2) create 3) re-route
         // check data has been entered correctly
 
@@ -89,7 +88,7 @@ export default {
           this.playerName_feedback = null
           
           // 2) Take the user Data and use it to populate FIREBASE
-          db.collection('gameRecords').add({
+          await db.collection('gameRecords').add({
             gameID: this.gameID,
             playerName: this.playerName,
             playerLives: 3,
@@ -98,10 +97,20 @@ export default {
             danager: false
           })
 
+          // 2A) get the doc id of the user that has been generated - this will be used to update player records
+          // Set the this.docID to be the firebase generated document id
+          await db.collection('gameRecords')
+          .where('playerID', '==',  this.playerID).get().then(snapshot=>{
+            snapshot.forEach(data=>{
+              this.docID = data.id
+            })
+          })
+
           // 3) route to the choose page, with the players name and game ID
 
           this.$router.push({name: 'ChoiseUI', params: {
             gameID: this.gameID,
+            docID: this.docID, // to resolve issue#1
             playerName: this.playerName,
             playerID: this.playerID,
             playerLivesLeft: 3
