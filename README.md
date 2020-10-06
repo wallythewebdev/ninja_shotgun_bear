@@ -1,19 +1,9 @@
-# nsb_vuejs
+# Ninja - Shotgun - Bear
 
-## Project setup
-```
-npm install
-```
+ninja shotgun bear is a rock paper sissors multiplayer game, it used: 
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+VUE JS - FIREBASE 
 
-### Compiles and minifies for production
-```
-npm run build
-```
+### the game can be played at [ninjashotgunbear.com](ninjashotgunbear.com)
+But please keep in mind you will need multiple please to play! 
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
