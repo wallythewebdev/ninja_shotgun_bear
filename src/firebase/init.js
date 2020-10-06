@@ -3,14 +3,8 @@ import firestore from 'firebase/firestore'
 
 // Your web app's Firebase configuration
 var firebaseConfig = {
-    apiKey: "AIzaSyAoUr7AiFenJ6Z-tdJJV7jKLR00f-KPNsE",
-    authDomain: "ninjashotgunbear.firebaseapp.com",
-    databaseURL: "https://ninjashotgunbear.firebaseio.com",
-    projectId: "ninjashotgunbear",
-    storageBucket: "ninjashotgunbear.appspot.com",
-    messagingSenderId: "539356270231",
-    appId: "1:539356270231:web:d118f7e9dc6507feabe3d2",
-    measurementId: "G-FFSQHM31FQ"
+//    YOU WILL NEED TO ADD YOUR OWN FIREBASE CONFIG HERE IF YOU WANT TO RE-USE THE CODE
+//     THIS IS TO PREVENT MY FIREBASE ACCOUNT FROM BECOMING SPAMMED WITH DATA
   };
   // Initialize Firebase
   let firebaseApp = firebase.initializeApp(firebaseConfig);
