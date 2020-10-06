@@ -36,7 +36,7 @@ export default {
     components: {
         Footer
     },
-    props: ['playerID', 'players'],
+    props: ['playerID', 'players', 'playerDocID'],
     data(){
         return {
             choiceNames: ['ninja', 'shotgun', 'bear'],
@@ -70,38 +70,78 @@ export default {
     methods: {
        
         removeLife: function(input=null){
+            // players picked the same choice
+            if(input == 'same'){
+                // reset
+                this.winners = "You all picked the same! Next time be more original....."
+                 // update player UI of lives on screen
+                this.updateLives(this.playerDocID)
+                // update DB - null all choices again <<< otherwise this will cause an infinite loop
+                this.nullPlayers()
+                // Reroute page after 10 seconds - 
+                setTimeout(()=>{
+                    this.reroute_page()
+                },10000)
+                return
+            }
             // 1) all players pick different - but there is only 1 of each type
-            if(input == null & this.ninja.length == 1 && this.shotgun.length == 1 && this.bear.length == 1){
-                input = this.players,
+            if(input == null && this.ninja.length == 1 && this.shotgun.length == 1 && this.bear.length == 1){
+                // this players details - not all player details
+                // input = this.players,
+                input = this.playerDocID
+
                 this.winners = 'No Winner';
                 this.lives = 'Eveyone lost a life!'
             }
             // 2) all players pick different - but only one is picked by a single person
             else if(input == null){
             //    ODD ONE OUT ?
+            // what if there are multiple odd ones out? i.e. x2 ninja x1bear x1 shotgun
                 this.results.forEach(choices => {
-                    if(choices.players.length == 1){
+                    if(choices.players.length == 1 && choices.players[0].playerID == this.playerID){
                         // this returns an array of objects, we need it to be an array of objects so the updateDB function can use forEach
-                        input = choices.players
+                        input = this.playerDocID
+                        console.log(`odd one out playerID ${input}`) 
                         // print to players the result
-                        this.lives = `${input[0].playerName} was the odd one out!`
-                        this.winners = `${input[0].playerName} lost a life!`
+                        this.lives = `${choices.players[0].playerName} was the odd one out!`
+                        this.winners = `${choices.players[0].playerName} lost a life!`
                     }
                 })
             }
             // 3) mutliple picked by multiple players
             else if(input == null){
                 // PLAYERS IS A PROP OF ALL PLAYERS ENTERING THE RESULTS PAGE - this is possible to break logic if players is ever removed
-                input = this.players // << this might be breaking testing due to it not updating the database? 
+                input = this.playerDocID // issue#1 
                 this.lives = `all players lost a life!`
             }
 
-            //4) there is only one winner - input == to the losing choice and passed to updateDB 
-            
-            // has anyone lost all their lives?
+           
+        //    Update the UI for the players to see who won!
+
+            input == 'shotgun' ? this.winners = 'NINJA WINS!' : 
+            input == 'ninja' ? this.winners = 'BEAR WINS!' :
+            input == 'bear' ? this.winners = 'SHOTGUN WINS!' :
+            null
+
+            if(input == this.currentPlayer[0].playerChoice){
+                input = this.playerDocID
+            } else if (input !== this.currentPlayer[0].playerChoice){
+                // update player UI of lives on screen
+                this.updateLives(this.playerDocID)
+                // update DB - null all choices again <<< otherwise this will cause an infinite loop
+                this.nullPlayers()
+                // Reroute page after 10 seconds - 
+                setTimeout(()=>{
+                    this.reroute_page()
+                },10000)
+                return
+            }
+
 
             // update DB - pass input
             this.updateDB(input)
+            // update UI field of lives left
+            this.updateLives(input)
             // update DB - null all choices again <<< otherwise this will cause an infinite loop
             this.nullPlayers()
             // Reroute page after 10 seconds - 
@@ -120,47 +160,39 @@ export default {
                         playerName: this.currentPlayer[0].playerName,
                         gameID: this.currentPlayer[0].gameID,
                         playerID: this.playerID,
-                        playerLivesLeft: this.playerLivesLeft
+                        playerLivesLeft: this.playerLivesLeft,
+                        docID: this.playerDocID
                     }
                 })
            
         },
+        
+        updateDB: async function(playerRecord){
+            /*
+            argument is the firebase docuemnt id of the player record that is being edited
+            function, queires the firebase DB and removes a life
+            for future use this function could be edited to also give lives
+            */    
+            await db.collection('gameRecords').doc(playerRecord).update({
+                // remove a life with -1 / can also be 1 to give life
+                playerLives: firebase.firestore.FieldValue.increment(-1)
+            });
 
-        deletePlayer: function(playerID){
-            console.log(playerID)
         },
-        
-        
-        updateDB: function(playerRecord){
-            console.log('Update DB Ran -- start')
 
-
-            playerRecord.forEach((record)=>{
-                // display to UI that player is OUT! 
-                 if(record.playerLives == 0){
-                     this.deadPlayers.push(record.playerName)
-                 }
-
-                db.collection('gameRecords')
-                .where('playerID', '==', record.playerID).get().then(docs=>{
-                    
-                    docs.forEach(doc=>{
-                        // update the amount of lives the player has on the front end to pass to router
-                        if(doc.data().playerLives == record.playerLives){
-                            this.playerLivesLeft = doc.data().playerLives -1;
-                            // display who lost a lift
-
-                        }
-                        // get the players document ID
-                        let docID = doc.id
-                        // update the players record in firebase removeing one life
-                        db.collection('gameRecords').doc(docID).update({
-                            playerLives: firebase.firestore.FieldValue.increment(-1)
-                        })
-                    })
-                })
+        updateLives: async function(playerRecord){
+            /*
+            functions argument is the firebase document id of the player record
+            function queries firebase to find the current lives left of the player and 
+            sets the value of this.playerLivesLeft = to that
+            this.playerLivesLeft is a prop that is passed back to the choice screen
+            */ 
+            await db.collection('gameRecords').doc(playerRecord)
+            .get()
+            .then(doc=>{
+                this.playerLivesLeft = doc.data().playerLives
+                console.log(this.playerLives)
             })
-            console.log('Update DB Ran -- end')     
         },
 
         nullPlayers: function(){
@@ -180,9 +212,10 @@ export default {
             })
         }
     },
+
     created(){
         
-       
+       console.log(`players doc id is ${this.playerDocID}`)
     //    filter the player choices and put them into the global scoped
     //    Ninja, ShotGun, Bear
         this.players.forEach(playerDetails => {
@@ -202,6 +235,13 @@ export default {
             }
         })
 
+        // players picked the same choices?
+        this.ninja.length >1 && this.shotgun.length == 0 && this.bear.length == 0 ? 
+        this.removeLife('same') :
+        this.ninja.length == 0 && this.shotgun.length >1 && this.bear.length == 0 ?
+        this.removeLife('same') :
+        this.ninja.length == 0 && this.shotgun.length == 0 && this.bear.length > 1 ?
+        this.removeLife('same') :
         // IS there one of each option picked by the players?
         this.ninja.length >= 1
         && 
@@ -214,15 +254,15 @@ export default {
         :
         // ninja vs shotgun - ninja wins
         (this.ninja.length >= 1 && this.shotgun.length >= 1 ?
-        this.removeLife(this.shotgun)
+        this.removeLife('shotgun')
         :
         // bear vs ninja - bear wins
         this.bear.length >= 1 && this.ninja.length >=1 ? 
-        this.removeLife(this.ninja)
+        this.removeLife('ninja')
         :
-        // shotgun vs bear - bear wins
+        // shotgun vs bear - shotgun wins
         this.shotgun.length >= 1 && this.bear.length >= 1 ? 
-        this.removeLife(this.bear) 
+        this.removeLife('bear') 
         :
         null // <<< empty as all conditions have been met
         )

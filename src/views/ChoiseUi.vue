@@ -5,7 +5,8 @@
     </div>
     <div class="choiseContainer">
         <div class="livesLeft">
-            <p class="game_info">Lives Left: </p><div class="lives" v-for="(lives, index) in livesLeft" :key="index"></div>
+            <p class="game_info">Lives Left: </p>
+            <div class="lives" v-for="(lives, index) in livesLeft" :key="index"></div>
         </div>
         <div class="playerNames">
             <p class="game_info">Player Names:</p>
@@ -23,13 +24,13 @@
                 </div>
             </ul>
         </div>
-        <div class="playerChoise">
+        <div class="playerChoice">
             <p>What are you today?</p>
             <div class="choices">
                 <!-- TBA - prevent click unless two people are playing -->
                 <button 
                 v-for="(choice, index) in choiseNames" :key="index"
-                @click.once="playerPick(index, $event)"
+                @click="playerPick(index, $event)"
                 :style="{ backgroundImage: 'url(' + require(`@/assets/img/icons/${choiseNames[index]}.svg`) + ')' }"></button>
 
             </div>
@@ -56,7 +57,8 @@ export default {
         playerName: String,
         gameID: String,
         playerID: String,
-        playerLivesLeft: Number
+        playerLivesLeft: Number,
+        docID: String
     },
     data(){
         return {
@@ -64,7 +66,7 @@ export default {
 
             playerNames: null, 
 
-            playerChoise: null,
+            playerChoice: null,
 
             gameName: null,
 
@@ -81,6 +83,7 @@ export default {
         this.gameName = this.gameID;
 
         
+        // create event listener for the DB
         db.collection("gameRecords").where('gameID', '==', this.gameName)
             .onSnapshot(snapshot => {
                 snapshot.docChanges().forEach(change => {
@@ -137,37 +140,25 @@ export default {
             // on the clicked button add the active class
             event.target.classList.toggle('clicked')
             // if the choice is the same as the already clicked choice set it back to null
-            if(this.playerChoise == this.choiseNames[index_ofChoice]){
-                this.playerChoise = null;
+            if(this.playerChoice == this.choiseNames[index_ofChoice]){
+                this.playerChoice = null;
                 event.target.classList.remove('clicked')
             } else {
                  // this triggers the watcher below - to update the database choice
-                this.playerChoise = this.choiseNames[index_ofChoice]
+                this.playerChoice = this.choiseNames[index_ofChoice]
             }
         }
     },
     watch: {
-        // when player has made choice - update the DB 
-        playerChoise: function(){
-            let docName;
+
+        // when player has made choice - update the DB with that choice
+        playerChoice: function(){
             
-            // 1) Query firebase to find the doc that has the PlayerID 
-            // This is going to be passed as a var later on, currently hard coded for testing
-            db.collection('gameRecords')
-            .where('playerID', '==', this.playerID)
-            // .update({playerChoice: this.playerChoise})
-            .get()
-            // 2) update the docName var, with the doc id number
-            .then((snapshot)=>{
-                snapshot.forEach((doc)=>{
-                    docName = doc.id
-                })
-            })
-            // 3) now we have the doc name we can update the docs data
-            .then(()=>{
-                db.collection('gameRecords').doc(docName).update({
-                    playerChoice: this.playerChoise
-                })
+        //    update db record with the String from player choice - 
+        // DEPENDECIE: prop: docID <<<<
+
+            db.collection('gameRecords').doc(this.docID).update({
+                playerChoice: this.playerChoice
             })
         },
 
@@ -193,7 +184,8 @@ export default {
                     name: 'Results',
                     params: {
                         playerID: this.playerNumber,
-                        players: this.gameData
+                        players: this.gameData,
+                        playerDocID: this.docID
                     }
                 })
             }
@@ -302,7 +294,7 @@ export default {
             }
         }
 
-        .playerChoise {
+        .playerChoice {
             font-family: lemonMIlk;
             font-size: 1.2em;
             color: $base-orange;
