@@ -23,4 +23,4 @@ pnpm-debug.log*
 *.sw?
 
 # ignore firebase init - 
-/src/firebase/init.js
+src/firebase/init.js
