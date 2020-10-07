@@ -205,6 +205,11 @@ export default {
     $base-grey: #707070;
   $base-orange: #FFC400;
 
+
+    $tablet: "only screen and (min-width : 720px)";
+    $desktop: "only screen and (min-width : 1280px)";
+    $lrg_desktop: "only screen and (min-width : 1920px)";
+
 //   UNIVERSAL
 
 .game_info {
@@ -242,6 +247,10 @@ export default {
         flex-direction: column;
         justify-content: space-around;
         min-height: 90vh;
+        @media #{$desktop}{
+            width: 50%;
+            margin: 0 auto;  // << center
+        }
         .livesLeft {
             width: 80%;
             display: flex;
@@ -321,8 +330,6 @@ export default {
                     background-position: center;
                     background-size: contain;
                     background-repeat: no-repeat;
-
-                    cursor: pointer;
 
                     transition: 0.2s ease-in-out;
                 }

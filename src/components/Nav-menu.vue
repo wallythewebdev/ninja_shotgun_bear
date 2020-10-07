@@ -14,6 +14,11 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
+
+    $tablet: "only screen and (min-width : 720px)";
+    $desktop: "only screen and (min-width : 1280px)";
+    $lrg_desktop: "only screen and (min-width : 1920px)";
+
     $base-grey: #707070;
   $base-orange: #FFC400;
 
@@ -36,6 +41,8 @@ export default {
         color: $base-grey;
 
         z-index: 9;
+
+        
 
         .menu-option{
             width: 80%;

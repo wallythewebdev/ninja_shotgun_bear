@@ -23,6 +23,15 @@ export default {
 }
 </script>
 <style lang="scss">
+    
+    // MEDIA QUERIES
+
+    // Mobile design comes first - so is not included as media query
+
+    $tablet: "only screen and (min-width : 720px)";
+    $desktop: "only screen and (min-width : 1280px)";
+    $lrg_desktop: "only screen and (min-width : 1920px)";
+
     .NSB-animation {
         overflow: hidden;
 
@@ -40,9 +49,21 @@ export default {
 
                 animation: hoz-scroll 3s infinite cubic-bezier(0,.53,1,.47);
 
+                @media #{$desktop}{
+                    margin-top: 50px;
+                    li {
+                        img {
+                            height: 150px;
+                        }
+                    }
+                }
+
+
             li {
                 width: 10%;
                 overflow: hidden;
+                
+
 
                 
             }

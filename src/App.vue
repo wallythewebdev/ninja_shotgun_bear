@@ -29,6 +29,11 @@ export default {
 </script>
 
 <style lang="scss">
+    $tablet: "only screen and (min-width : 720px)";
+    $desktop: "only screen and (min-width : 1280px)";
+    $lrg_desktop: "only screen and (min-width : 1920px)";
+
+
 // global vars && fonts
 
 * {
@@ -100,6 +105,10 @@ export default {
   border-radius: 50%;
 
   z-index: 10;
+
+  @media #{$desktop}{
+    cursor: pointer;
+  }
 
 // FOR THE ROUTER LINKS BELOW!
   // a {

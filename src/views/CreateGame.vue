@@ -136,6 +136,14 @@ export default {
   $base-grey: #707070;
   $base-orange: #FFC400;
 
+   // MEDIA QUERIES
+
+    // Mobile design comes first - so is not included as media query
+
+    $tablet: "only screen and (min-width : 720px)";
+    $desktop: "only screen and (min-width : 1280px)";
+    $lrg_desktop: "only screen and (min-width : 1920px)";
+
   .create-game-container{
     height: 100%;
     width: 100%;
@@ -159,6 +167,10 @@ export default {
           margin: 50px auto 0;
 
           color: $base-orange;
+
+          @media #{$desktop}{
+            width: 50%;
+          }
 
           h2{
                 font-size: 2.3em;
@@ -184,30 +196,38 @@ export default {
 
             // Code for button height - this could be taken care of in button component? - use 
             // if else to see if button is tight fit or large padding ? 
-            .button-container{
+            button{
               height: 6vh;
               font-size: 1.35em;
+              border: none;
+              font-family: lemonMilk;
+
+              @media #{$desktop}{
+                        cursor: pointer;
+                    }
             }
 
             // CREATE GAME BUTTON - 
-            .button-container:nth-child(1){
+            button:nth-child(1){
               width: 50%;
-              h3{
+              
                 text-align: center;
                 width: 100%;  
                 font-size: 1em; // << Style over rules the above 1.35 due to multipe words being used
-              }
+                background: $base-orange;
+                color: $base-grey;
+              
             }
 
             // BACK BUTTON 
-            .button-container:nth-child(2){
+            button:nth-child(2){
               width: 45%;
               background: $base-grey;
-              h3{
+              
                 text-align: center;
                 width: 100%;
                 color: $base-orange;
-              }
+              
             }
             
           }

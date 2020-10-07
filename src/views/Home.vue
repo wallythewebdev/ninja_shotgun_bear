@@ -71,8 +71,8 @@ $base-grey: #707070;
 
         button{
           font-family: lemonMilk;
-          font-size: 2.3em;
-          padding: 20px;
+          font-size: 1.7em;
+          padding: 10px 20px;
           background: $base-orange;
           color: $base-grey;
           border: none
