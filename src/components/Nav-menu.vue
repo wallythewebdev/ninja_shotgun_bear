@@ -1,14 +1,24 @@
 <template>
     <div class="navDisplay">
         <div class="menu-option">
-            <h2>RULES</h2>
+            <h2 @click="rules = !rules">RULES</h2>
+        </div>
+        <div class="rules_show">
+
         </div>
     </div>
 </template>
 
 <script>
 export default {
-  name: 'Nav-menu'
+  name: 'Nav-menu',
+
+  data(){
+      return {
+        //   show rules when true
+          rules: false 
+      }
+  }
 }
 </script>
 
@@ -51,8 +61,15 @@ export default {
             margin: 0 auto;
             height: 10vh;
             @include center-pos();
+            @media #{$desktop}{
+                width: 40%
+            }
             h2{
                 @include center-pos();
+            }
+
+            .rules_show{
+                
             }
         }
     }

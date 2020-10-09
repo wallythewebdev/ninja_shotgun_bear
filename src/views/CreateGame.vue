@@ -116,6 +116,21 @@ export default {
             playerLivesLeft: 3
           }})
 
+          // 4) create local storage obj with the player values 
+
+          // create value to be passed: 
+
+          let NSB_playerDetails = {
+            gameID: this.gameID,
+            docID: this.docID,
+            playerName: this.playerName,
+            playerID: this.playerID,
+            playerLivesLeft: 3
+          }
+
+          // this will either write or overwrite no need for checks
+          window.localStorage.setItem('NSB_playerInfo', JSON.stringify(NSB_playerDetails))
+
         } else {
           // Add feedback for the player 
           this.gameID == '' ? this.gameID_feedback = 'create a name...' : null;
@@ -209,10 +224,10 @@ export default {
 
             // CREATE GAME BUTTON - 
             button:nth-child(1){
-              width: 50%;
+              
               
                 text-align: center;
-                width: 100%;  
+                width: 60%;  
                 font-size: 1em; // << Style over rules the above 1.35 due to multipe words being used
                 background: $base-orange;
                 color: $base-grey;
@@ -221,11 +236,11 @@ export default {
 
             // BACK BUTTON 
             button:nth-child(2){
-              width: 45%;
+              
               background: $base-grey;
               
                 text-align: center;
-                width: 100%;
+                width: 30%;
                 color: $base-orange;
               
             }

@@ -1,15 +1,6 @@
 <template>
   <div id="app">
-    <div id="nav" @click="navShow = !navShow">
-      <p class="menu-title-txt">menu</p>
-    </div>
-      <!-- <div class="navOverlay">
-        <router-link to="/">Home</router-link> |
-        <router-link to="/about">About</router-link>
-      </div> -->
-      <transition name="nav-body">
-        <NavMenu v-if="this.navShow" />
-      </transition>
+    
       
     <router-view/>
   </div>
@@ -90,21 +81,17 @@ export default {
 
 #nav {
 
-  font-family: lemonMilk;
-
-  position: absolute;
-  top: 10px;
-  left: calc(100% - 60px);
-
-  width: 50px;
-  height: 50px;
-
-  background: $base-orange;
-  color: $base-grey;
-
-  border-radius: 50%;
-
-  z-index: 10;
+    font-family: lemonMilk;
+    position: absolute;
+    left: calc(100% - 12.5vh);
+    width: 50px;
+    height: 50px;
+    color: #FFC400;
+    z-index: 10;
+    height: 10vh;
+    width: 12.5vh;
+    background: #707070;
+    font-size: 3vh;
 
   @media #{$desktop}{
     cursor: pointer;

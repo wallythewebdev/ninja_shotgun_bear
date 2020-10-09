@@ -1,5 +1,14 @@
 <template>
 <div class="choiceUI">
+    <!-- menu button to be clicked -->
+    <div id="nav" @click="navShow = !navShow">
+      <p class="menu-title-txt">menu</p>
+    </div>
+    <!-- menu when its being shown on page -->
+      <transition name="nav-body">
+        <NavMenu v-if="this.navShow" />
+      </transition>
+
     <div class="gameCode">
         <p><span class="info-text">game id: </span>{{gameID}}</p>
     </div>
@@ -12,7 +21,9 @@
             <p class="game_info">Player Names:</p>
             <ul>
                 <div v-for="(player, index) in gameData" :key="index" class="playerNameContainer">
-                    <li :class="gameData[index].lastLife && lastLife">{{player.playerName}}</li>
+                    <!-- if player dead ? show with strike, else show normal -->
+                    <strike v-if="player.playerLives == 0"><li :class="gameData[index].lastLife && lastLife">{{player.playerName}}</li></strike>
+                    <li v-else :class="gameData[index].lastLife && lastLife">{{player.playerName}}</li>
                     <!-- if player at index of gameData.playerchoice !== null  -->
                     <div 
                     class="playerReady"
@@ -25,8 +36,9 @@
             </ul>
         </div>
         <div class="playerChoice">
-            <p>What are you today?</p>
-            <div class="choices">
+            <p>{{choiceText}}</p>
+            <!-- if player out of lives dont show choices for them moving forward -->
+            <div v-if="this.livesLeft != 0" class="choices">
                 <!-- TBA - prevent click unless two people are playing -->
                 <button 
                 v-for="(choice, index) in choiseNames" :key="index"
@@ -45,13 +57,16 @@ import Footer from '@/components/Footer.vue'
 
 import db from '@/firebase/init.js'
 
+import NavMenu from '@/components/Nav-menu.vue'
+
 // this is to use the Vue.set function to watch for components being updated
 import Vue from 'vue'
 import uniqueID from 'uniqid'
 
 export default {
     components: {
-        Footer
+        Footer,
+        NavMenu
     },
     props: {
         playerName: String,
@@ -62,9 +77,10 @@ export default {
     },
     data(){
         return {
-            livesLeft: this.playerLivesLeft,
+            // for nav to be triggered into showing
+            navShow: false,
 
-            playerNames: null, 
+            livesLeft: this.playerLivesLeft,
 
             playerChoice: null,
 
@@ -74,13 +90,25 @@ export default {
 
             gameData: [],
 
-            playerNumber: this.playerID
+            playerNumber: this.playerID,
+
+            choiceText: 'What are you today???'
 
         }
     },
         created(){
+        // pass local storage to required fields to keep player logged in issue#2
+
+        let playerObj = JSON.parse(window.localStorage.getItem('NSB_playerInfo'))
+        this.playerName = playerObj.playerName
+        this.docID = playerObj.docID
+        this.gameID = playerObj.gameID
+        this.playerID = playerObj.playerID
+        this.livesLeft = playerObj.playerLivesLeft
+
+
         // 1) update gameName with prop value 
-        this.gameName = this.gameID;
+        this.gameName = this.gameID
 
         
         // create event listener for the DB
@@ -88,7 +116,6 @@ export default {
             .onSnapshot(snapshot => {
                 snapshot.docChanges().forEach(change => {
                     // if modified then update
-                    // console.log(change) <<< FOR TESTING
                     if(change.type == 'modified'){
                         // make a ref of the Game ID that was updated
                         let changeID = change.doc.data().playerID;
@@ -96,24 +123,28 @@ export default {
                         let pos = this.gameData.findIndex(obj => {
                             return obj.playerID == changeID;
                         });
+
                         
 
                         Vue.set(this.gameData, pos, change.doc.data())
 
-                        // If player lives have dropped below 2 - say last life!
+                        // PLAYER LAST LIFE (< 2)
                         if(change.doc.data().playerLives < 2){
-                            
+                            // give a warning to the player?
                         }
 
+                        // PLAYER LIVES == 0
                         if(change.doc.data().playerLives == 0){
-                            // delete from backend
-                            db.collection('gameRecords').doc(change.doc.id).delete()
+                           
+                            
+                            // Vue.delete(this.gameData, pos)
+
                         }
                         
-                        return
+                        
                     } else if(change.type == 'added'){
                         this.gameData.push(change.doc.data())
-                        return
+                       
                     } else if(change.type == 'removed'){
                         // need to remove the player from the game
                         let pos = this.gameData.findIndex(obj => {
@@ -126,7 +157,10 @@ export default {
                 })
             })
 
-    
+            // if player has no lives then update the choiceText to below:
+            if(this.livesLeft == 0){
+                this.choiceText = 'Sadly.... You lost, but there is always next time....'
+            }
        
     },
     methods: {
@@ -147,7 +181,7 @@ export default {
                  // this triggers the watcher below - to update the database choice
                 this.playerChoice = this.choiseNames[index_ofChoice]
             }
-        }
+        },
     },
     watch: {
 
@@ -179,12 +213,17 @@ export default {
             // but there should atleast be - two players
             // **inprovment - there should also be a waiting point for players to join the game
             if(readyPlayers.length == players.length && players.length >= 2){
-                console.log('Players are ready!')
+                
+                // push game data to local storage issue#2
+                let localPlayer = JSON.parse(window.localStorage.getItem('NSB_playerInfo'));
+                localPlayer.gameData = this.gameData
+                window.localStorage.setItem('NSB_playerInfo', JSON.stringify(localPlayer))
+
                 this.$router.push({
                     name: 'Results',
                     params: {
                         playerID: this.playerNumber,
-                        players: this.gameData,
+                        players: this.gameData, //Issue#2 << this needs to be passed to next page otherwise winning player will become stuck
                         playerDocID: this.docID
                     }
                 })
@@ -195,7 +234,17 @@ export default {
                     name: 'Create'
                 })
             }
-        }
+        },
+
+        // #misc - watching the lives left go to Zero is not being triggered ? not sure why 
+        // livesLeft: function(){
+        //     // if player has no lives left!
+        //     if(this.livesLeft == 0){
+        //         console.log('NO LIVES')
+        //         this.choiceText = 'Sadly.... You lost, but there is always next time....'
+
+        //     }
+        // }
     }
 
 }
@@ -231,6 +280,8 @@ export default {
             width: 100%;
             font-family: lemonMilk;
             font-size: 1.5em;
+            // keep visible when nav is open
+            z-index: 9;
         p {
             position: absolute;
             top: 50%;

@@ -105,6 +105,8 @@ export default {
                         // print to players the result
                         this.lives = `${choices.players[0].playerName} was the odd one out!`
                         this.winners = `${choices.players[0].playerName} lost a life!`
+                        // remove life from local storage
+                        this.removeLifeLocal(-1)
                     }
                 })
             }
@@ -113,6 +115,8 @@ export default {
                 // PLAYERS IS A PROP OF ALL PLAYERS ENTERING THE RESULTS PAGE - this is possible to break logic if players is ever removed
                 input = this.playerDocID // issue#1 
                 this.lives = `all players lost a life!`
+                // remove life from local storage
+                        this.removeLifeLocal(-1)
             }
 
            
@@ -137,7 +141,8 @@ export default {
                 return
             }
 
-
+            // remove life from local storage
+            this.removeLifeLocal(-1)
             // update DB - pass input
             this.updateDB(input)
             // update UI field of lives left
@@ -210,10 +215,26 @@ export default {
                     })
                 })
             })
+        },
+
+        removeLifeLocal: function(value){
+            // get data - edit it - push back to local storage
+            let playerObj = JSON.parse(window.localStorage.getItem('NSB_playerInfo'));
+            // prevent if life = 0
+            if(playerObj.playerLivesLeft == 0){
+                return
+            } else {
+                playerObj.playerLivesLeft += value;
+                window.localStorage.setItem('NSB_playerInfo', JSON.stringify(playerObj))
+            }
         }
     },
 
     created(){
+
+        // make local storage doc avalible & if gameData null ? set to local version
+        let localPlayerDoc = JSON.parse(window.localStorage.getItem('NSB_playerInfo'))
+        this.players == null || this.players == undefined ? (this.players = localPlayerDoc.gameData) : null
         
        console.log(`players doc id is ${this.playerDocID}`)
     //    filter the player choices and put them into the global scoped
