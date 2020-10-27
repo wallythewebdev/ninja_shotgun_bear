@@ -92,7 +92,9 @@ export default {
 
             playerNumber: this.playerID,
 
-            choiceText: 'What are you today???'
+            choiceText: 'What are you today???',
+
+            winner: null
 
         }
     },
@@ -198,21 +200,32 @@ export default {
 
         // watch to see how many people have made a choice so far
         gameData: function(){
+            // 1) DEFINE DATA
             let players = this.gameData; // Number of players
             let playerID = this.playerNumber // Get the unique player number
             let readyPlayers = []; // empty to record amount of pagers
-            console.log(`amount of players ${players.length}`) // testing
-            // if the player has made their choice - put them into the ready players array
-            this.gameData.forEach(player=>{
+            let alivePlayers = []; // <<< to check length against valid players who are still in the game
+
+            // 2) Assign ready players - && issue#3 -> assign alive players
+            // if the player has made their choice - put them into the ready players array 
+            this.gameData.forEach((player, index)=>{
+                // 1) assign alive player
+                if(player.playerLives !== 0){
+                        alivePlayers.push(player)
+                    }
+                // 2) assign player choices
                 if(player.playerChoice !== null){
                     readyPlayers.push(player)
                 }
             })
-            console.log(readyPlayers) // test
-            // if all players are ready then do somthing <<< RE_ROUTE THE PAGE >>>
+
+
+            // 3) Conditions for rerouting
+            // if all players are ready then do somthing <<< RE_ROUTE THE PAGE >>> -- issue#3 (if all player are ready that have lives!)
             // but there should atleast be - two players
+
             // **inprovment - there should also be a waiting point for players to join the game
-            if(readyPlayers.length == players.length && players.length >= 2){
+            if(readyPlayers.length == alivePlayers.length && alivePlayers.length >= 2){
                 
                 // push game data to local storage issue#2
                 let localPlayer = JSON.parse(window.localStorage.getItem('NSB_playerInfo'));
@@ -225,6 +238,20 @@ export default {
                         playerID: this.playerNumber,
                         players: this.gameData, //Issue#2 << this needs to be passed to next page otherwise winning player will become stuck
                         playerDocID: this.docID
+                    }
+                })
+            }
+
+            // debugger
+            // issue#3 reroute if there is a winner
+            if(alivePlayers.length == 1 && players.length > 1){
+                
+                this.$router.push({
+                    name: 'Winner',
+                    params: {
+                        playerID: alivePlayers[0].playerName,
+                        playerChoice: alivePlayers[0].playerChoice,
+                        players
                     }
                 })
             }

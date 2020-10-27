@@ -81,7 +81,7 @@ export default {
                 // Reroute page after 10 seconds - 
                 setTimeout(()=>{
                     this.reroute_page()
-                },10000)
+                },7000)
                 return
             }
             // 1) all players pick different - but there is only 1 of each type
@@ -137,7 +137,7 @@ export default {
                 // Reroute page after 10 seconds - 
                 setTimeout(()=>{
                     this.reroute_page()
-                },10000)
+                },7000)
                 return
             }
 
@@ -152,7 +152,7 @@ export default {
             // Reroute page after 10 seconds - 
             setTimeout(()=>{
                 this.reroute_page()
-            },10000)
+            },7000)
            
         },
 

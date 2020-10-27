@@ -9,6 +9,8 @@ import ChoiseUI from '../views/ChoiseUi.vue' // be aware of lower case i in UI
 
 import Results from '../views/Results.vue'
 
+import Winner from '../views/Winner.vue'
+
 Vue.use(VueRouter)
 
   const routes = [
@@ -45,6 +47,12 @@ Vue.use(VueRouter)
     path: '/Results',
     name: 'Results',
     component: Results,
+    props: true
+  },
+  {
+    path: '/Winner',
+    name: 'Winner',
+    component: Winner,
     props: true
   }
   
