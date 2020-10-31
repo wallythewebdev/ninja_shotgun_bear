@@ -75,6 +75,12 @@ export default {
       this.playerID = uniqueID();
 
     },
+    watch: {
+      gameID(){
+        // #6 data sanatization - the game name will always be lower case
+        this.gameID = this.gameID.toLowerCase().trim()
+      }
+    },
     methods: {
       async createGame(){
         // 1) checks 2) create 3) re-route
