@@ -91,10 +91,11 @@ export default {
           await db.collection('gameRecords').add({
             gameID: this.gameID,
             playerName: this.playerName,
-            playerLives: 3,
+            playerLives: 3, // <<< will need to make a var so it can be edited at some point
             playerChoice: null,
             playerID: this.playerID,
-            danager: false
+            danager: false,
+            playerDead: false
           })
 
           // 2A) get the doc id of the user that has been generated - this will be used to update player records

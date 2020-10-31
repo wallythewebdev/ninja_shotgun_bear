@@ -26,7 +26,7 @@
                     <li v-else :class="gameData[index].lastLife && lastLife">{{player.playerName}}</li>
                     <!-- if player at index of gameData.playerchoice !== null  -->
                     <div 
-                    class="playerReady"
+                    class="playerReady" v-if="player.playerLives !== 0"
                     :class="gameData[index].playerChoice !== null
                     ? 'playerActive'
                     : null"
