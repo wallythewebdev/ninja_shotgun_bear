@@ -22,8 +22,8 @@
             <ul>
                 <div v-for="(player, index) in gameData" :key="index" class="playerNameContainer">
                     <!-- if player dead ? show with strike, else show normal -->
-                    <strike v-if="player.playerLives == 0"><li :class="gameData[index].lastLife && lastLife">{{player.playerName}}</li></strike>
-                    <li v-else :class="gameData[index].lastLife && lastLife">{{player.playerName}}</li>
+                    <strike v-if="player.playerLives == 0"><li>{{player.playerName}}</li></strike>
+                    <li v-else :class="gameData[index].danger && lastLife">{{player.playerName}}</li>
                     <!-- if player at index of gameData.playerchoice !== null  -->
                     <div 
                     class="playerReady" v-if="player.playerLives !== 0"
@@ -133,6 +133,8 @@ export default {
                         // PLAYER LAST LIFE (< 2)
                         if(change.doc.data().playerLives < 2){
                             // give a warning to the player?
+                            // chnage the font of the player and make larger -
+                            this.gameData[pos].danger = true   
                         }
 
                         // PLAYER LIVES == 0
@@ -288,6 +290,11 @@ export default {
 
 //   UNIVERSAL
 
+// last life
+.lastLife{
+
+}
+
 .game_info {
     font-size: 0.7em;
     color: $base-orange;
@@ -365,6 +372,10 @@ export default {
                         font-family: lemonMilk;
                         color: $base-orange;
                         font-size: 1.3em;
+                    }
+                    .lastLife{
+                        color: red;
+                        font-size: 1.5em;
                     }
                     .playerReady{
                         height: 25px;

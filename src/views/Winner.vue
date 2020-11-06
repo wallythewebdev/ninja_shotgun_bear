@@ -4,10 +4,12 @@
             <h1>WINNER!</h1>
             <h2 class="winnerName">{{playerID}}</h2>
             <img src="@/assets/img/icons/bear.svg" alt="winners choice">
-        </div>
-        <div>
+            
+        <div class="playAgain">
             <button @click="playAgain">PLAY<br>AGAIN</button>
         </div>
+        </div>
+        
         <Footer/>
     </div>
 </template>
@@ -54,43 +56,54 @@ export default {
         display: flex;
         flex-direction: column;
         min-height: 100vh;
+        max-height: 100vh;
 
         // universal style -
         font-family: lemonMilk;
         .content{
             flex-grow: 1;
+            position: relative;
             // style for the winner
 
             // page title i.e. WINNER!
             h1{
-                font-size: 15vw;
+                font-size: 3rem;
                 color: $base-grey;
                 background: $base-orange;
             }
 
             h2 {
-                font-size: 10vw;
-                width: 100%;
-                text-align: center;
-                color: $base-orange;
-                background: $base-grey;
+                    font-size: 2.5rem;
+                    width: 80%;
+                    padding: 10px;
+                    text-align: center;
+                    color: #FFC400;
+                    background: #707070;
+                    transform: rotate(-5deg);
+                    margin: 4rem auto 0;
             }
 
             img {
-                width: 25vw;
+                width: 10rem;
                 margin-top: 25px;
             }
         }
 
-        div {
+        div.playAgain {
+            
+
             button {
-                font-size: 10vw;
-                background: $base-orange;
-                color: $base-grey;
-                font-family: LemonMilk;
-                border: none;
-                padding: 25px;
-                margin: 25px;
+                    font-size: 2rem;
+                    background: #FFC400;
+                    color: #707070;
+                    font-family: LemonMilk;
+                    border: none;
+                    height: 10rem;
+                    width: 10rem;
+                    margin: 25px 0;
+                    font-weight: bold;
+                    line-height: 2rem;
+                    border-radius: 50%;
             }
         }
     }
